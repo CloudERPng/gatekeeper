@@ -77,6 +77,8 @@ export default Vue.extend({
         });
 
         if (response.status === 200) {
+          const { token } = response.data;
+          sessionStorage.setItem('token', token);
           this.$router.push({ name: 'Home' });
         }
       } catch (err) {
