@@ -1,10 +1,10 @@
 <template>
-  <v-card max-width="600" height="100%" min-height="500">
+  <v-card min-width="900" height="100%" min-height="500">
     <v-card-title>User</v-card-title>
     <v-card-text>
       <v-container fluid>
         <v-row align="center" justify="center">
-          <v-cols cols="auto">
+          <v-col cols="6">
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-select
                 v-model="customer"
@@ -38,7 +38,7 @@
 
               <v-btn :disabled="!valid" color="success" class="mr-4">Save</v-btn>
             </v-form>
-          </v-cols>
+          </v-col>
         </v-row>
       </v-container>
     </v-card-text>
