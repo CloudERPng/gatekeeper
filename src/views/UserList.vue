@@ -142,7 +142,14 @@ export default {
 
   methods: {
     goToUser(e) {
-      console.log(e);
+      this.$router.push(
+        {
+          name: 'user-detail',
+          params: {
+            id: e.email,
+          },
+        },
+      );
     },
     async initialize() {
       try {
