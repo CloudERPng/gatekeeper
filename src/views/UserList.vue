@@ -151,6 +151,9 @@ export default {
           params: {
             id: e.id,
           },
+          query: {
+            relations: ['customer'],
+          },
         },
       );
     },
@@ -162,7 +165,6 @@ export default {
         this.loading = true;
         const response = await Axios.get('http://127.0.0.1:3000/users');
         const { data } = response;
-        console.log(data);
         this.users = data.map((item) => ({
           id: item.id,
           customer: item.customer ? item.customer.name : '',

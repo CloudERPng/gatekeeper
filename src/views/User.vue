@@ -70,6 +70,8 @@ export default Vue.extend({
     Axios.defaults.headers = {
       Authorization: `Bearer ${sessionStorage.getItem('token')}`,
     };
+
+    // load customers
     try {
       const r = await Axios.get('http://127.0.0.1:3000/customers');
       const { data } = r;
@@ -78,6 +80,25 @@ export default Vue.extend({
       this.alert.text = `${err.message}. Please reload the page`;
       this.alert.type = 'error';
       this.valid = false;
+    }
+
+    // load the user data if available
+    const { id } = this.$route.params;
+    if (id) {
+      try {
+        const r = await Axios.get(`http://127.0.0.1:3000/users/${id}`, { params: this.$route.query });
+        const { data } = r;
+        this.customer = data.customer ? data.customer.id : '';
+        this.email = data.email || '';
+        this.password = data.password || '';
+        this.role = data.role || this.role;
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        this.is_superuser = data.is_superuser || false;
+      } catch (err) {
+        this.alert.text = `${err.message}. Please reload the page`;
+        this.alert.type = 'error';
+        this.valid = false;
+      }
     }
   },
 
