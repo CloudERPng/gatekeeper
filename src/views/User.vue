@@ -1,60 +1,97 @@
 <template>
-  <v-card min-width="900" height="100%" min-height="500">
-    <v-card-title>User</v-card-title>
-    <v-card-text>
-      <v-container fluid>
-        <v-row align="center" justify="center">
-          <v-col cols="8">
-            <v-form ref="form" v-model="valid" lazy-validation>
-              <v-select
-                v-model="customer"
-                :items="customers"
-                :rules="[v => !!v || 'Item is required']"
-                label="Customer"
-                required
-              ></v-select>
+  <div>
+    <v-card min-width="900" height="100%" min-height="500">
+      <v-card-title>User</v-card-title>
+      <v-card-text>
+        <div>
+          <v-alert
+            dismissible elevation="1"
+            :type="alert.type"
+            :value="Boolean(alert.text)">
+            {{ alert.text }}
+          </v-alert>
+        </div>
+        <v-container fluid>
+          <v-row align="center" justify="center">
+            <v-col cols="8">
+              <v-form ref="form" v-model="valid" lazy-validation>
+                <v-select
+                  v-model="customer"
+                  :items="customers"
+                  item-text="name"
+                  item-value="id"
+                  :rules="[v => !!v || 'Item is required']"
+                  label="Customer"
+                  required
+                ></v-select>
 
-              <v-text-field
-                v-model="email"
-                :rules="emailRules"
-                label="E-mail" required>
-              </v-text-field>
+                <v-text-field
+                  v-model="email"
+                  :rules="emailRules"
+                  label="E-mail" required>
+                </v-text-field>
 
-              <v-text-field
-                v-model="password"
-                label="Password" required>
-              </v-text-field>
+                <v-text-field
+                  v-model="password"
+                  label="Password" required>
+                </v-text-field>
 
-              <v-text-field
-                disabled
-                v-model="role"
-                label="Role" required>
-              </v-text-field>
+                <v-text-field
+                  disabled
+                  v-model="role"
+                  label="Role" required>
+                </v-text-field>
 
-              <v-checkbox
-                v-model="is_superuser"
-                label="Is an admin user">
-              </v-checkbox>
+                <v-checkbox
+                  v-model="is_superuser"
+                  label="Is an admin user">
+                </v-checkbox>
 
-              <v-btn :disabled="!valid" color="success" class="mr-4">Save</v-btn>
-            </v-form>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-card-text>
-  </v-card>
+                <v-btn :disabled="!valid" color="success" class="mr-4">Save</v-btn>
+              </v-form>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import Axios from 'axios';
 
 const MAX_EMAIL_LENGTH = 64;
 
 export default Vue.extend({
   name: 'User',
+
+  async created() {
+    Axios.defaults.headers = {
+      Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+    };
+    try {
+      const r = await Axios.get('http://127.0.0.1:3000/customers');
+      const { data } = r;
+      this.customers = data;
+    } catch (err) {
+      this.alert.text = `${err.message}. Please reload the page`;
+      this.alert.type = 'error';
+      this.valid = false;
+    }
+  },
+
   data: () => ({
     customer: '',
-    customers: ['Item 1', 'Item 2', 'Item 3', 'Item 4'],
+    customers: [{
+      name: '',
+      id: '',
+      disabled: false,
+    }],
+    alert: {
+      text: '',
+      type: 'info',
+    },
     // eslint-disable-next-line @typescript-eslint/camelcase
     is_superuser: false,
     valid: true,
@@ -72,9 +109,14 @@ export default Vue.extend({
     password: '',
     select: null,
     checkbox: false,
-    snackbar: '',
     role: 'API User',
   }),
+
+  computed: {
+    customerList() {
+      return this.customers.filter((item) => item.disabled === false);
+    },
+  },
 
   methods: {},
 });
