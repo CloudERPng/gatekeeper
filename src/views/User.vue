@@ -32,8 +32,9 @@
                 </v-text-field>
 
                 <v-text-field
+                  v-if="is_superuser"
                   v-model="password"
-                  label="Password" required>
+                  label="Password">
                 </v-text-field>
 
                 <v-text-field
@@ -90,7 +91,7 @@ export default Vue.extend({
         const { data } = r;
         this.customer = data.customer ? data.customer.id : '';
         this.email = data.email || '';
-        this.password = data.password || '';
+        this.password = '';
         this.role = data.role || this.role;
         // eslint-disable-next-line @typescript-eslint/camelcase
         this.is_superuser = data.is_superuser || false;
