@@ -81,6 +81,7 @@ export default {
   name: 'UserList',
   data: () => ({
     defaultItem: {
+      id: '',
       customer: '',
       email: '',
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -94,6 +95,7 @@ export default {
     dialog: false,
     editedIndex: -1,
     editedItem: {
+      id: '',
       customer: '',
       email: '',
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -105,6 +107,7 @@ export default {
       admin: 'No',
     },
     headers: [
+      { text: 'ID', value: 'id' },
       {
         text: 'Customer',
         align: 'left',
@@ -116,7 +119,7 @@ export default {
       { text: 'Alias Password', value: 'alias_password' },
       { text: 'Role', value: 'role' },
       { text: 'Active', value: 'active', sortable: false },
-      { text: 'Is Administrator', value: 'admin' },
+      { text: 'Staff', value: 'admin' },
     ],
     loading: false,
     search: '',
@@ -146,7 +149,7 @@ export default {
         {
           name: 'user-detail',
           params: {
-            id: e.email,
+            id: e.id,
           },
         },
       );
@@ -159,7 +162,9 @@ export default {
         this.loading = true;
         const response = await Axios.get('http://127.0.0.1:3000/users');
         const { data } = response;
+        console.log(data);
         this.users = data.map((item) => ({
+          id: item.id,
           customer: item.customer ? item.customer.name : '',
           email: item.email,
           // eslint-disable-next-line @typescript-eslint/camelcase
