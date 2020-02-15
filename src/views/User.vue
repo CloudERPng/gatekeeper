@@ -34,6 +34,7 @@
                 <v-text-field
                   v-if="is_superuser"
                   v-model="password"
+                  :rules="passwordRules"
                   label="Password">
                 </v-text-field>
 
@@ -129,6 +130,9 @@ export default Vue.extend({
       (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
     ],
     password: '',
+    passwordRules: [
+      (v: string) => !!v || 'Password is required',
+    ],
     select: null,
     checkbox: false,
     role: 'API User',
