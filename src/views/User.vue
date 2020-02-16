@@ -12,8 +12,8 @@
           </v-alert>
         </div>
         <v-container fluid>
-          <v-row align="center" justify="center">
-            <v-col cols="8">
+          <v-row>
+            <v-col cols="6">
               <v-form ref="form" v-model="valid">
                 <v-select
                   v-model="customer"
@@ -102,8 +102,66 @@
                 </div>
               </v-form>
             </v-col>
+            <v-col cols="6">
+              <v-card>
+                <v-card dark class="mb-3">
+                  <v-card-title>Aliases</v-card-title>
+                  <v-card-text>
+                    <v-list disabled>
+                      <v-list-item-group>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title>Username</v-list-item-title>
+                            <v-list-item-subtitle>{{ alias.alias_username }}</v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title>Password</v-list-item-title>
+                            <v-list-item-subtitle>
+                              {{ alias.alias_password }}
+                            </v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card-text>
+                </v-card>
+                <v-card dark>
+                  <v-card-title>
+                    Tokens
+                    <v-btn color="primary" small class="ma-2">
+                      Generate Token
+                    </v-btn>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-list>
+                      <v-list-item-group>
+                        <v-list-item
+                          v-for="(item, i) in tokens" :key="i">
+                          <v-list-item-content>
+                            <v-list-item-title>{{ item.token }}</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card-text>
+                </v-card>
+              </v-card>
+            </v-col>
           </v-row>
         </v-container>
+        <v-btn
+          absolute
+          dark
+          fab
+          top
+          right
+          color="pink"
+          @click="reload"
+        >
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
       </v-card-text>
     </v-card>
   </div>
@@ -112,6 +170,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Axios from 'axios';
+import { stringify } from 'qs';
 
 const MAX_EMAIL_LENGTH = 64;
 
@@ -119,10 +178,7 @@ export default Vue.extend({
   name: 'User',
 
   async created() {
-    Axios.defaults.headers = {
-      Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-    };
-
+    // just for making our validator work properly
     if (this.is_superuser) {
       this.passwordRules = [
         (v: string) => !!v || 'Password is required',
@@ -130,6 +186,7 @@ export default Vue.extend({
     } else {
       this.passwordRules = [];
     }
+    // ===========================================
 
     // load customers
     try {
@@ -143,22 +200,12 @@ export default Vue.extend({
     }
 
     // load the user data if available
-    const { id } = this.$route.params;
-    if (id) {
-      try {
-        const r = await Axios.get(`http://127.0.0.1:3000/users/${id}`, { params: this.$route.query });
-        const { data } = r;
-        this.customer = data.customer ? data.customer.id : '';
-        this.email = data.email || '';
-        this.password = '';
-        this.role = data.role || this.role;
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        this.is_superuser = data.is_superuser || false;
-      } catch (err) {
-        this.alert.text = `${err.message}. Please reload the page`;
-        this.alert.type = 'error';
-        this.valid = false;
-      }
+    try {
+      await this.loadPageData();
+    } catch (err) {
+      this.alert.text = `${err.message}. Please reload the page`;
+      this.alert.type = 'error';
+      this.valid = false;
     }
   },
 
@@ -171,6 +218,13 @@ export default Vue.extend({
     alert: {
       text: '',
       type: 'info',
+    },
+    alias: {
+      id: '',
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      alias_username: '',
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      alias_password: '',
     },
     customer: '',
     customerRules: [
@@ -195,6 +249,7 @@ export default Vue.extend({
     passwordRules: [] as Function[],
     checkbox: false,
     role: 'API User',
+    tokens: [],
   }),
 
   computed: {
@@ -214,6 +269,46 @@ export default Vue.extend({
   },
 
   methods: {
+    async getAllUserInfo(id: number) {
+      const r = await Axios.get(`http://127.0.0.1:3000/users/${id}`, {
+        params: {
+          relations: ['customer', 'tokens', 'alias'],
+        },
+        paramsSerializer: (params) => stringify(params),
+      });
+      const { data } = r;
+      const { tokens, alias } = data;
+      this.tokens = tokens;
+      this.alias = alias;
+      this.customer = data.customer ? data.customer.id : '';
+      this.email = data.email || '';
+      this.password = '';
+      this.role = data.role || this.role;
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      this.is_superuser = data.is_superuser || false;
+    },
+
+    async loadPageData() {
+      Axios.defaults.headers = {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+      };
+      console.log('checking');
+      const { id } = this.$route.params;
+      if (id) {
+        this.getAllUserInfo(Number(id));
+      }
+    },
+
+    async reload() {
+      try {
+        await this.loadPageData();
+      } catch (err) {
+        this.alert.text = `${err.message}. Please reload the page`;
+        this.alert.type = 'error';
+        this.valid = false;
+      }
+    },
+
     async save() {
       try {
         const r = this.$route.params.id ? await Axios.put(`http://127.0.0.1:3000/users/${this.$route.params.id}`, this.payload) : await Axios.post('http://127.0.0.1:3000/users', this.payload);
