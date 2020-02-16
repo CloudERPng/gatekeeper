@@ -163,6 +163,19 @@
           <v-icon>mdi-refresh</v-icon>
         </v-btn>
       </v-card-text>
+      <v-snackbar
+        top
+        v-model="snackbar"
+      >
+        {{ snackMessage }}
+        <v-btn
+          color="pink"
+          text
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </v-snackbar>
     </v-card>
   </div>
 </template>
@@ -249,6 +262,8 @@ export default Vue.extend({
     passwordRules: [] as Function[],
     checkbox: false,
     role: 'API User',
+    snackbar: false,
+    snackMessage: '',
     tokens: [],
   }),
 
@@ -278,8 +293,8 @@ export default Vue.extend({
       });
       const { data } = r;
       const { tokens, alias } = data;
-      this.tokens = tokens;
-      this.alias = alias;
+      this.tokens = tokens && tokens.length ? tokens : [];
+      this.alias = alias || this.alias;
       this.customer = data.customer ? data.customer.id : '';
       this.email = data.email || '';
       this.password = '';
@@ -292,7 +307,6 @@ export default Vue.extend({
       Axios.defaults.headers = {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`,
       };
-      console.log('checking');
       const { id } = this.$route.params;
       if (id) {
         this.getAllUserInfo(Number(id));
@@ -302,6 +316,8 @@ export default Vue.extend({
     async reload() {
       try {
         await this.loadPageData();
+        this.snackMessage = 'Done.';
+        this.snackbar = true;
       } catch (err) {
         this.alert.text = `${err.message}. Please reload the page`;
         this.alert.type = 'error';
@@ -315,10 +331,15 @@ export default Vue.extend({
         const { data } = r;
         this.dialog = false;
         if (Object.keys(data).length) {
-          this.$router.push({ name: 'user-list' });
+          this.snackMessage = 'Saved successfully. An ERPNext alias is being created.';
+          this.snackbar = true;
+          if (this.$route.name === 'new-user') {
+            this.$router.push({ name: 'user-detail', params: { id: data.user.id } });
+          }
         }
       } catch (err) {
-        console.log(err);
+        this.snackMessage = 'Failed. Please try again or reload the page.';
+        this.snackbar = true;
       }
     },
   },
