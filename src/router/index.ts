@@ -13,6 +13,11 @@ const routes = [
     redirect: { name: 'user-list' },
     children: [
       {
+        path: 'users/new',
+        name: 'new-user',
+        component: () => import('../views/User.vue'),
+      },
+      {
         path: 'users/:id',
         name: 'user-detail',
         component: () => import('../views/User.vue'),

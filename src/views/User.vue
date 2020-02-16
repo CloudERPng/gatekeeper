@@ -215,11 +215,15 @@ export default Vue.extend({
 
   methods: {
     async save() {
-      const r = await Axios.put(`http://127.0.0.1:3000/users/${this.$route.params.id}`, this.payload);
-      const { data } = r;
-      this.dialog = false;
-      if (Object.keys(data).length) {
-        this.$router.push({ name: 'user-list' });
+      try {
+        const r = this.$route.params.id ? await Axios.put(`http://127.0.0.1:3000/users/${this.$route.params.id}`, this.payload) : await Axios.post('http://127.0.0.1:3000/users', this.payload);
+        const { data } = r;
+        this.dialog = false;
+        if (Object.keys(data).length) {
+          this.$router.push({ name: 'user-list' });
+        }
+      } catch (err) {
+        console.log(err);
       }
     },
   },
