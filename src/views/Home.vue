@@ -25,13 +25,13 @@
 
     <v-app-bar app color="indigo" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title>Gatekeeper 1.0</v-toolbar-title>
     </v-app-bar>
 
     <v-content class="pa-2">
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
-          <v-col class="text-center">
+          <v-col>
             <router-view></router-view>
           </v-col>
         </v-row>
