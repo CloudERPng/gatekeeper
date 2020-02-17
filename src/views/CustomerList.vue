@@ -1,24 +1,24 @@
 <template>
   <v-data-table
     :headers="headers"
-    :items="users"
+    :items="customers"
     sort-by="calories"
     class="elevation-1"
     :search="search"
     :loading="loading"
     loading-text="Loading..."
-    @click:row="goToUser"
+    @click:row="goToCustomer"
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
-        <v-toolbar-title>Users</v-toolbar-title>
+        <v-toolbar-title>Customers</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
         <v-btn
           color="primary"
           dark class="mb-2"
-          @click="$router.push({ name: 'new-user' })">
-          New User
+          @click="$router.push({ name: 'new-customer' })">
+          New Customer
         </v-btn>
       </v-toolbar>
       <v-card elevation="0">
@@ -42,38 +42,29 @@
 import Axios from 'axios';
 
 export default {
-  name: 'UserList',
+  name: 'CustomerList',
   data: () => ({
+    customers: [],
     defaultItem: {
       id: '',
-      customer: '',
-      email: '',
+      name: '',
       // eslint-disable-next-line @typescript-eslint/camelcase
-      alias_username: '',
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      alias_password: '',
-      role: '',
-      active: 'No',
-      admin: 'No',
+      erpnext_address: '',
+      disabled: false,
     },
     headers: [
       { text: 'ID', value: 'id' },
       {
-        text: 'Customer',
+        text: 'Name',
         align: 'left',
         sortable: true,
-        value: 'customer',
+        value: 'name',
       },
-      { text: 'Email', value: 'email' },
-      { text: 'Alias Username', value: 'alias_username' },
-      { text: 'Alias Password', value: 'alias_password' },
-      { text: 'Role', value: 'role' },
-      { text: 'Active', value: 'active', sortable: false },
-      { text: 'Staff', value: 'admin' },
+      { text: 'Instance URL', value: 'erpnextAddress' },
+      { text: 'Disabled', value: 'disabled' },
     ],
     loading: false,
     search: '',
-    users: [],
   }),
 
   created() {
@@ -81,15 +72,12 @@ export default {
   },
 
   methods: {
-    goToUser(e) {
+    goToCustomer(e) {
       this.$router.push(
         {
-          name: 'user-detail',
+          name: 'customer-detail',
           params: {
             id: e.id,
-          },
-          query: {
-            relations: ['customer'],
           },
         },
       );
@@ -100,19 +88,13 @@ export default {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         };
         this.loading = true;
-        const response = await Axios.get('http://127.0.0.1:3000/users');
+        const response = await Axios.get('http://127.0.0.1:3000/customers');
         const { data } = response;
-        this.users = data.map((item) => ({
+        this.customers = data.map((item) => ({
           id: item.id,
-          customer: item.customer ? item.customer.name : '',
-          email: item.email,
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          alias_username: item.alias ? item.alias.alias_username : '',
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          alias_password: item.alias ? item.alias.alias_password : '',
-          role: item.role || '',
-          active: item.active ? 'Yes' : 'No',
-          admin: item.is_superuser ? 'Yes' : 'No',
+          name: item.name || '',
+          erpnextAddress: item.erpnext_address || '',
+          disabled: item.disabled ? 'No' : 'Yes',
         }));
         this.loading = false;
       } catch (err) {
