@@ -126,6 +126,17 @@
                 </div>
               </v-form>
             </v-col>
+            <v-col cols="6">
+              <v-btn
+                v-if="$route.name === 'customer-detail' && !dirty"
+                block
+                class="mb-4"
+                color="error"
+                @click="cancelDialog = true"
+              >
+                Delete this record
+              </v-btn>
+            </v-col>
           </v-row>
         </v-container>
         <v-btn
