@@ -27,6 +27,11 @@ const routes = [
         name: 'user-list',
         component: () => import('../views/UserList.vue'),
       },
+      {
+        path: 'customers',
+        name: 'customer-list',
+        component: () => import('../views/CustomerList.vue'),
+      },
     ],
   },
   {

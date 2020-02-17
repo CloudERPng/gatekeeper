@@ -3,6 +3,14 @@
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
         <v-list-item-group v-model="active">
+          <v-list-item link @click="active=0" :to="{ name: 'customer-list' }">
+            <v-list-item-action>
+              <v-icon>mdi-account-details</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Customers</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item link @click="active=0" :to="{ name: 'user-list' }">
             <v-list-item-action>
               <v-icon>mdi-contact-mail</v-icon>
