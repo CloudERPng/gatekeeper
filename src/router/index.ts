@@ -10,6 +10,24 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
+    redirect: { name: 'user-list' },
+    children: [
+      {
+        path: 'users/new',
+        name: 'new-user',
+        component: () => import('../views/User.vue'),
+      },
+      {
+        path: 'users/:id',
+        name: 'user-detail',
+        component: () => import('../views/User.vue'),
+      },
+      {
+        path: 'users',
+        name: 'user-list',
+        component: () => import('../views/UserList.vue'),
+      },
+    ],
   },
   {
     path: '/about',

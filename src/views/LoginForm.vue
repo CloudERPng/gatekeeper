@@ -14,6 +14,19 @@
             sm="8"
             md="4"
           >
+            <v-snackbar
+              top
+              v-model="snackbar"
+            >
+              {{ snackMessage }}
+              <v-btn
+                color="pink"
+                text
+                @click="snackbar = false"
+              >
+                Close
+              </v-btn>
+            </v-snackbar>
             <v-card class="elevation-12">
               <v-toolbar
                 color="primary"
@@ -63,9 +76,11 @@ export default Vue.extend({
   name: 'LoginForm',
 
   data: () => ({
-    showPassword: false,
-    username: '',
     password: '',
+    showPassword: false,
+    snackbar: false,
+    snackMessage: 'Authentication failed. Please try again.',
+    username: '',
   }),
 
   methods: {
@@ -76,11 +91,15 @@ export default Vue.extend({
           password: this.password,
         });
 
-        if (response.status === 200) {
+        const { token } = response.data;
+        if (token) {
+          sessionStorage.setItem('token', token);
           this.$router.push({ name: 'Home' });
+        } else {
+          this.snackbar = true;
         }
       } catch (err) {
-        console.log(err);
+        this.snackbar = true;
       }
     },
   },
