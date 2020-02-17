@@ -23,12 +23,14 @@
                   :rules="customerRules"
                   label="Customer"
                   required
+                  @change="dirty=true"
                 ></v-select>
 
                 <v-text-field
                   v-model="email"
                   :rules="emailRules"
-                  label="E-mail" required>
+                  label="E-mail" required
+                  @change="dirty=true">
                 </v-text-field>
 
                 <v-text-field
@@ -37,18 +39,21 @@
                   :rules="passwordRules"
                   label="Password"
                   type="password"
-                  :required="Boolean(is_superuser)">
+                  :required="Boolean(is_superuser)"
+                  @change="dirty=true">
                 </v-text-field>
 
                 <v-text-field
                   disabled
                   v-model="role"
-                  label="Role" required>
+                  label="Role" required
+                  @change="dirty=true">
                 </v-text-field>
 
                 <v-checkbox
                   v-model="is_superuser"
-                  label="Is an admin user">
+                  label="Is an admin user"
+                  @change="dirty=true">
                 </v-checkbox>
 
                 <v-btn
@@ -99,10 +104,58 @@
                       </v-card-actions>
                     </v-card>
                   </v-dialog>
+
+                  <v-dialog
+                    v-model="cancelDialog"
+                    persistent
+                    width="500"
+                  >
+
+                    <v-card>
+                      <v-card-title
+                        class="headline grey lighten-2"
+                      >
+                        Confirmation required
+                      </v-card-title>
+
+                      <v-card-text>
+                        This cannot be undone. Are you sure you want to delete this record?
+                      </v-card-text>
+
+                      <v-divider></v-divider>
+
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="primary"
+                          text
+                          @click="dialog = false"
+                        >
+                          Cancel
+                        </v-btn>
+                        <v-btn
+                          color="error"
+                          text
+                          @click="deleteItem"
+                        >
+                          Yes, delete it
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
                 </div>
               </v-form>
             </v-col>
             <v-col cols="6">
+              <v-btn
+                v-if="$route.name === 'user-detail' && !dirty"
+                block
+                class="mb-4"
+                color="error"
+                @click="cancelDialog = true"
+              >
+                Delete this record
+              </v-btn>
               <v-card>
                 <v-card dark class="mb-3">
                   <v-card-title>Aliases</v-card-title>
@@ -152,6 +205,7 @@
           </v-row>
         </v-container>
         <v-btn
+          v-if="$route.name === 'user-detail'"
           absolute
           dark
           fab
@@ -239,6 +293,7 @@ export default Vue.extend({
       // eslint-disable-next-line @typescript-eslint/camelcase
       alias_password: '',
     },
+    cancelDialog: false,
     customer: '',
     customerRules: [
       (v: string) => !!v || 'Select a customer from the drop down',
@@ -249,6 +304,7 @@ export default Vue.extend({
       disabled: false,
     }],
     dialog: false,
+    dirty: false,
     // eslint-disable-next-line @typescript-eslint/camelcase
     is_superuser: false,
     valid: false,
@@ -284,6 +340,28 @@ export default Vue.extend({
   },
 
   methods: {
+    async deleteItem() {
+      const { id } = this.$route.params;
+      if (id) {
+        try {
+          this.deleteRecordAsync(Number(id));
+        } catch (err) {
+          const message = 'There was a problem. Please try again in a few moments or reload the page.';
+          this.dirty = false;
+          this.snackMessage = message;
+          this.snackbar = true;
+        }
+      }
+    },
+
+    async deleteRecordAsync(id: number) {
+      Axios.defaults.headers = {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+      };
+      await Axios.delete(`http://127.0.0.1:3000/users/${id}`);
+      this.$router.push({ name: 'user-list' });
+    },
+
     async getAllUserInfo(id: number) {
       const r = await Axios.get(`http://127.0.0.1:3000/users/${id}`, {
         params: {
@@ -331,7 +409,9 @@ export default Vue.extend({
         const { data } = r;
         this.dialog = false;
         if (Object.keys(data).length) {
-          this.snackMessage = 'Saved successfully. An ERPNext alias is being created.';
+          const message = this.payload.is_superuser ? 'Saved successfully' : 'Saved successfully. An ERPNext alias will be generated for admin staff';
+          this.dirty = false;
+          this.snackMessage = message;
           this.snackbar = true;
           if (this.$route.name === 'new-user') {
             this.$router.push({ name: 'user-detail', params: { id: data.user.id } });
