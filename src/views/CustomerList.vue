@@ -17,7 +17,7 @@
         <v-btn
           color="primary"
           dark class="mb-2"
-          @click="$router.push('')">
+          @click="$router.push({ name: 'new-customer' })">
           New Customer
         </v-btn>
       </v-toolbar>
