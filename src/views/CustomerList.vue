@@ -75,12 +75,9 @@ export default {
     goToCustomer(e) {
       this.$router.push(
         {
-          name: 'user-detail',
+          name: 'customer-detail',
           params: {
             id: e.id,
-          },
-          query: {
-            relations: ['customer'],
           },
         },
       );
