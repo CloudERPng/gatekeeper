@@ -157,7 +157,7 @@
                 Delete this record
               </v-btn>
               <v-card>
-                <v-card dark class="mb-3">
+                <v-card class="mb-3">
                   <v-card-title>Aliases</v-card-title>
                   <v-card-text>
                     <v-list disabled>
@@ -180,24 +180,18 @@
                     </v-list>
                   </v-card-text>
                 </v-card>
-                <v-card dark>
+                <v-card>
                   <v-card-title>
                     Tokens
-                    <v-btn color="primary" small class="ma-2">
+                    <v-btn color="primary" small class="ma-2" @click="generateToken">
                       Generate Token
                     </v-btn>
                   </v-card-title>
                   <v-card-text>
-                    <v-list>
-                      <v-list-item-group>
-                        <v-list-item
-                          v-for="(item, i) in tokens" :key="i">
-                          <v-list-item-content>
-                            <v-list-item-title>{{ item.token }}</v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                    </v-list>
+                    <div class="pa-2" v-for="(item, i) in tokens" :key="i">
+                      {{ item.token }}
+                      <v-divider key="i" />
+                    </div>
                   </v-card-text>
                 </v-card>
               </v-card>
@@ -238,6 +232,13 @@
 import Vue from 'vue';
 import Axios from 'axios';
 import { stringify } from 'qs';
+
+interface Token {
+  id: number;
+  domain: string;
+  token: string;
+  is_valid: boolean;
+}
 
 const MAX_EMAIL_LENGTH = 64;
 
@@ -302,6 +303,8 @@ export default Vue.extend({
       name: '',
       id: '',
       disabled: false,
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      erpnext_address: '',
     }],
     dialog: false,
     dirty: false,
@@ -320,7 +323,7 @@ export default Vue.extend({
     role: 'API User',
     snackbar: false,
     snackMessage: '',
-    tokens: [],
+    tokens: [] as Token[],
   }),
 
   computed: {
@@ -336,6 +339,17 @@ export default Vue.extend({
         customerId: this.customer,
       };
       return payload;
+    },
+    tokenPayload() {
+      const customerObj = this.customers.find((item) => item.id === this.customer);
+      console.log(customerObj);
+      if (customerObj && !this.dirty && this.$route.params.id) {
+        return {
+          domain: customerObj.erpnext_address,
+          user: this.$route.params.id,
+        };
+      }
+      return null;
     },
   },
 
@@ -362,6 +376,20 @@ export default Vue.extend({
       this.$router.push({ name: 'user-list' });
     },
 
+    async generateToken() {
+      if (this.tokenPayload) {
+        Axios.defaults.headers = {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+        };
+        const { data } = await Axios.post('http://127.0.0.1:3000/tokens', this.tokenPayload);
+        // we can't possible generate an invalidated token so we just push it straight
+        // into the list
+        this.tokens.push(data);
+        this.snackMessage = 'Done';
+        this.snackbar = true;
+      }
+    },
+
     async getAllUserInfo(id: number) {
       const r = await Axios.get(`http://127.0.0.1:3000/users/${id}`, {
         params: {
@@ -371,7 +399,8 @@ export default Vue.extend({
       });
       const { data } = r;
       const { tokens, alias } = data;
-      this.tokens = tokens && tokens.length ? tokens : [];
+      this.tokens = tokens
+        && tokens.length ? tokens.filter((token: Token) => Boolean(token.is_valid)) : [];
       this.alias = alias || this.alias;
       this.customer = data.customer ? data.customer.id : '';
       this.email = data.email || '';

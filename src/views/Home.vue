@@ -19,7 +19,7 @@
               <v-list-item-title>Users</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link @click="1">
+          <v-list-item link @click="1" :to="{ name: 'token-list' }">
             <v-list-item-action>
               <v-icon>mdi-key</v-icon>
             </v-list-item-action>
