@@ -42,6 +42,11 @@ const routes = [
         name: 'customer-list',
         component: () => import('../views/CustomerList.vue'),
       },
+      {
+        path: 'tokens',
+        name: 'token-list',
+        component: () => import('../views/TokenList.vue'),
+      },
     ],
   },
   {
