@@ -342,7 +342,6 @@ export default Vue.extend({
     },
     tokenPayload() {
       const customerObj = this.customers.find((item) => item.id === this.customer);
-      console.log(customerObj);
       if (customerObj && !this.dirty && this.$route.params.id) {
         return {
           domain: customerObj.erpnext_address,
