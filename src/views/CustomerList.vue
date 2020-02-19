@@ -61,6 +61,8 @@ export default {
         value: 'name',
       },
       { text: 'Instance URL', value: 'erpnextAddress' },
+      { text: 'API Key', value: 'apiKey' },
+      { text: 'Secret Key', value: 'secretKey' },
       { text: 'Disabled', value: 'disabled' },
     ],
     loading: false,
@@ -95,6 +97,8 @@ export default {
           name: item.name || '',
           erpnextAddress: item.erpnext_address || '',
           disabled: item.disabled ? 'No' : 'Yes',
+          apiKey: item.api_key || '',
+          secretKey: item.secret_key,
         }));
         this.loading = false;
       } catch (err) {

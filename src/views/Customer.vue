@@ -30,6 +30,22 @@
                   @change="dirty=true">
                 </v-text-field>
 
+                <v-text-field
+                  v-model="api_key"
+                  :rules="apiKeyRules"
+                  label="API Key"
+                  required
+                  @change="dirty=true">
+                </v-text-field>
+
+                <v-text-field
+                  v-model="secret_key"
+                  :rules="secretKeyRules"
+                  label="Secret Key"
+                  required
+                  @change="dirty=true">
+                </v-text-field>
+
                 <v-checkbox
                   v-model="disabled"
                   label="Disabled"
@@ -197,6 +213,11 @@ export default Vue.extend({
       text: '',
       type: 'info',
     },
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    api_key: '',
+    apiKeyRules: [
+      (v: string) => !!v || 'API Key is required',
+    ],
     cancelDialog: false,
     dialog: false,
     dirty: false,
@@ -210,6 +231,11 @@ export default Vue.extend({
     erpnextAddressRules: [
       (v: string) => !!v || 'The ERPNext instance URL is required',
     ],
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    secret_key: '',
+    secretKeyRules: [
+      (v: string) => !!v || 'Secret Key is required',
+    ],
     snackbar: false,
     snackMessage: '',
   }),
@@ -220,6 +246,10 @@ export default Vue.extend({
         name: this.name,
         address: this.erpnextAddress,
         disabled: this.disabled,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        api_key: this.api_key,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        secret_key: this.secret_key,
       };
       return payload;
     },
@@ -254,6 +284,10 @@ export default Vue.extend({
       this.erpnextAddress = data.erpnext_address;
       this.name = data.name;
       this.disabled = data.disabled;
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      this.api_key = data.api_key;
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      this.secret_key = data.secret_key;
     },
 
     async loadPageData() {
