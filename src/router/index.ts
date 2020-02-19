@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
-import LoginForm from '../views/LoginForm.vue';
 
 Vue.use(VueRouter);
 
@@ -42,6 +41,11 @@ const routes = [
         name: 'customer-list',
         component: () => import('../views/CustomerList.vue'),
       },
+      {
+        path: 'tokens',
+        name: 'token-list',
+        component: () => import('../views/TokenList.vue'),
+      },
     ],
   },
   {
@@ -55,7 +59,7 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: LoginForm,
+    component: () => import('../views/LoginForm.vue'),
   },
 ];
 
