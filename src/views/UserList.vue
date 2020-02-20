@@ -31,6 +31,19 @@
           </v-text-field>
         </v-card-title>
       </v-card>
+      <v-snackbar
+        top
+        v-model="snackbar"
+      >
+        {{ snackMessage }}
+        <v-btn
+          color="pink"
+          text
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </v-snackbar>
     </template>
     <template v-slot:no-data>
       <v-btn color="primary" @click="initialize">Reset</v-btn>
@@ -73,6 +86,8 @@ export default {
     ],
     loading: false,
     search: '',
+    snackbar: '',
+    snackMessage: '',
     users: [],
   }),
 
@@ -116,7 +131,8 @@ export default {
         }));
         this.loading = false;
       } catch (err) {
-        console.log(err);
+        this.snackMessage = 'Could not fetch data to initialise the page.';
+        this.snackbar = true;
       }
     },
   },
