@@ -86,7 +86,7 @@ export default Vue.extend({
   methods: {
     async login() {
       try {
-        const response = await Axios.post('http://phrase.website/login', {
+        const response = await Axios.post('https://phrase.website/login', {
           username: this.username,
           password: this.password,
         });

@@ -274,12 +274,12 @@ export default Vue.extend({
       Axios.defaults.headers = {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`,
       };
-      await Axios.delete(`http://phrase.website/customers/${id}`);
+      await Axios.delete(`https://phrase.website/customers/${id}`);
       this.$router.push({ name: 'customer-list' });
     },
 
     async getCustomerInfo(id: number) {
-      const r = await Axios.get(`http://phrase.website/customers/${id}`);
+      const r = await Axios.get(`https://phrase.website/customers/${id}`);
       const { data } = r;
       this.erpnextAddress = data.erpnext_address;
       this.name = data.name;
@@ -314,7 +314,7 @@ export default Vue.extend({
 
     async save() {
       try {
-        const r = this.$route.params.id ? await Axios.put(`http://phrase.website/customers/${this.$route.params.id}`, this.payload) : await Axios.post('http://phrase.website/customers', this.payload);
+        const r = this.$route.params.id ? await Axios.put(`https://phrase.website/customers/${this.$route.params.id}`, this.payload) : await Axios.post('https://phrase.website/customers', this.payload);
         const { data } = r;
         this.dialog = false;
         if (Object.keys(data).length) {

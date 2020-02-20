@@ -115,7 +115,7 @@ export default {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         };
         this.loading = true;
-        const response = await Axios.get('http://phrase.website/users');
+        const response = await Axios.get('https://phrase.website/users');
         const { data } = response;
         this.users = data.map((item) => ({
           id: item.id,
