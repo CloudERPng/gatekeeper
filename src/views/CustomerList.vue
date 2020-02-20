@@ -90,7 +90,7 @@ export default {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         };
         this.loading = true;
-        const response = await Axios.get('http://127.0.0.1:3000/customers');
+        const response = await Axios.get('http://46.101.158.103/customers');
         const { data } = response;
         this.customers = data.map((item) => ({
           id: item.id,

@@ -274,12 +274,12 @@ export default Vue.extend({
       Axios.defaults.headers = {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`,
       };
-      await Axios.delete(`http://127.0.0.1:3000/customers/${id}`);
+      await Axios.delete(`http://46.101.158.103/customers/${id}`);
       this.$router.push({ name: 'customer-list' });
     },
 
     async getCustomerInfo(id: number) {
-      const r = await Axios.get(`http://127.0.0.1:3000/customers/${id}`);
+      const r = await Axios.get(`http://46.101.158.103/customers/${id}`);
       const { data } = r;
       this.erpnextAddress = data.erpnext_address;
       this.name = data.name;
@@ -314,7 +314,7 @@ export default Vue.extend({
 
     async save() {
       try {
-        const r = this.$route.params.id ? await Axios.put(`http://127.0.0.1:3000/customers/${this.$route.params.id}`, this.payload) : await Axios.post('http://127.0.0.1:3000/customers', this.payload);
+        const r = this.$route.params.id ? await Axios.put(`http://46.101.158.103/customers/${this.$route.params.id}`, this.payload) : await Axios.post('http://46.101.158.103/customers', this.payload);
         const { data } = r;
         this.dialog = false;
         if (Object.keys(data).length) {

@@ -96,7 +96,7 @@ export default {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         };
         this.loading = true;
-        const response = await Axios.get('http://127.0.0.1:3000/tokens', { params: { all: 1 } });
+        const response = await Axios.get('http://46.101.158.103/tokens', { params: { all: 1 } });
         const { data } = response;
         this.tokens = data.map((item) => ({
           id: item.id,
@@ -118,7 +118,7 @@ export default {
       };
       this.loading = true;
       try {
-        await Axios.post('http://127.0.0.1:3000/tokens/invalidate', { id: item.id });
+        await Axios.post('http://46.101.158.103/tokens/invalidate', { id: item.id });
         // if an error is not thrown, we can safely assume that the `is_valid` property
         // is now false. No need for a round trip
         const token = this.tokens.find((_token) => _token.id === item.id);

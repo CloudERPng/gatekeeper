@@ -258,7 +258,7 @@ export default Vue.extend({
 
     // load customers
     try {
-      const r = await Axios.get('http://127.0.0.1:3000/customers');
+      const r = await Axios.get('http://46.101.158.103/customers');
       const { data } = r;
       this.customers = data;
     } catch (err) {
@@ -371,7 +371,7 @@ export default Vue.extend({
       Axios.defaults.headers = {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`,
       };
-      await Axios.delete(`http://127.0.0.1:3000/users/${id}`);
+      await Axios.delete(`http://46.101.158.103/users/${id}`);
       this.$router.push({ name: 'user-list' });
     },
 
@@ -380,7 +380,7 @@ export default Vue.extend({
         Axios.defaults.headers = {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         };
-        const { data } = await Axios.post('http://127.0.0.1:3000/tokens', this.tokenPayload);
+        const { data } = await Axios.post('http://46.101.158.103/tokens', this.tokenPayload);
         // we can't possible generate an invalidated token so we just push it straight
         // into the list
         this.tokens.push(data);
@@ -390,7 +390,7 @@ export default Vue.extend({
     },
 
     async getAllUserInfo(id: number) {
-      const r = await Axios.get(`http://127.0.0.1:3000/users/${id}`, {
+      const r = await Axios.get(`http://46.101.158.103/users/${id}`, {
         params: {
           relations: ['customer', 'tokens', 'alias'],
         },
@@ -433,7 +433,7 @@ export default Vue.extend({
 
     async save() {
       try {
-        const r = this.$route.params.id ? await Axios.put(`http://127.0.0.1:3000/users/${this.$route.params.id}`, this.payload) : await Axios.post('http://127.0.0.1:3000/users', this.payload);
+        const r = this.$route.params.id ? await Axios.put(`http://46.101.158.103/users/${this.$route.params.id}`, this.payload) : await Axios.post('http://46.101.158.103/users', this.payload);
         const { data } = r;
         this.dialog = false;
         if (Object.keys(data).length) {
