@@ -10,3 +10,5 @@ new Vue({
   vuetify,
   render: (h) => h(App),
 }).$mount('#app');
+
+export default 'http://127.0.0.1:3000';

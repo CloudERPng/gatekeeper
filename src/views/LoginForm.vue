@@ -71,6 +71,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Axios from 'axios';
+import serverUrl from '../main';
 
 export default Vue.extend({
   name: 'LoginForm',
@@ -86,7 +87,7 @@ export default Vue.extend({
   methods: {
     async login() {
       try {
-        const response = await Axios.post('https://phrase.website/login', {
+        const response = await Axios.post(`${serverUrl}/login`, {
           username: this.username,
           password: this.password,
         });

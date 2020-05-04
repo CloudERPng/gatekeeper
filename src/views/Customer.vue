@@ -188,6 +188,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Axios from 'axios';
+import serverUrl from '../main';
 
 export default Vue.extend({
   name: 'Customer',
@@ -274,12 +275,12 @@ export default Vue.extend({
       Axios.defaults.headers = {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`,
       };
-      await Axios.delete(`https://phrase.website/customers/${id}`);
+      await Axios.delete(`${serverUrl}/customers/${id}`);
       this.$router.push({ name: 'customer-list' });
     },
 
     async getCustomerInfo(id: number) {
-      const r = await Axios.get(`https://phrase.website/customers/${id}`);
+      const r = await Axios.get(`${serverUrl}/customers/${id}`);
       const { data } = r;
       this.erpnextAddress = data.erpnext_address;
       this.name = data.name;
@@ -314,7 +315,7 @@ export default Vue.extend({
 
     async save() {
       try {
-        const r = this.$route.params.id ? await Axios.put(`https://phrase.website/customers/${this.$route.params.id}`, this.payload) : await Axios.post('https://phrase.website/customers', this.payload);
+        const r = this.$route.params.id ? await Axios.put(`${serverUrl}/customers/${this.$route.params.id}`, this.payload) : await Axios.post(`${serverUrl}/customers`, this.payload);
         const { data } = r;
         this.dialog = false;
         if (Object.keys(data).length) {

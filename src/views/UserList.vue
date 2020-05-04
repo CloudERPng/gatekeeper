@@ -53,6 +53,7 @@
 
 <script>
 import Axios from 'axios';
+import serverUrl from '../main';
 
 export default {
   name: 'UserList',
@@ -115,7 +116,7 @@ export default {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         };
         this.loading = true;
-        const response = await Axios.get('https://phrase.website/users');
+        const response = await Axios.get(`${serverUrl}/users`);
         const { data } = response;
         this.users = data.map((item) => ({
           id: item.id,

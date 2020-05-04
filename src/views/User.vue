@@ -232,6 +232,7 @@
 import Vue from 'vue';
 import Axios from 'axios';
 import { stringify } from 'qs';
+import serverUrl from '../main';
 
 interface Token {
   id: number;
@@ -258,13 +259,14 @@ export default Vue.extend({
 
     // load customers
     try {
-      const r = await Axios.get('https://phrase.website/customers');
+      const r = await Axios.get(`${serverUrl}/customers`);
       const { data } = r;
       this.customers = data;
     } catch (err) {
       this.alert.text = `${err.message}. Please reload the page`;
       this.alert.type = 'error';
       this.valid = false;
+      console.log(err);
     }
 
     // load the user data if available
@@ -371,7 +373,7 @@ export default Vue.extend({
       Axios.defaults.headers = {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`,
       };
-      await Axios.delete(`https://phrase.website/users/${id}`);
+      await Axios.delete(`${serverUrl}/users/${id}`);
       this.$router.push({ name: 'user-list' });
     },
 
@@ -380,7 +382,7 @@ export default Vue.extend({
         Axios.defaults.headers = {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         };
-        const { data } = await Axios.post('https://phrase.website/tokens', this.tokenPayload);
+        const { data } = await Axios.post(`${serverUrl}/tokens`, this.tokenPayload);
         // we can't possible generate an invalidated token so we just push it straight
         // into the list
         this.tokens.push(data);
@@ -390,7 +392,7 @@ export default Vue.extend({
     },
 
     async getAllUserInfo(id: number) {
-      const r = await Axios.get(`https://phrase.website/users/${id}`, {
+      const r = await Axios.get(`${serverUrl}/users/${id}`, {
         params: {
           relations: ['customer', 'tokens', 'alias'],
         },
@@ -415,7 +417,7 @@ export default Vue.extend({
       };
       const { id } = this.$route.params;
       if (id) {
-        this.getAllUserInfo(Number(id));
+        await this.getAllUserInfo(Number(id));
       }
     },
 
@@ -433,7 +435,7 @@ export default Vue.extend({
 
     async save() {
       try {
-        const r = this.$route.params.id ? await Axios.put(`https://phrase.website/users/${this.$route.params.id}`, this.payload) : await Axios.post('https://phrase.website/users', this.payload);
+        const r = this.$route.params.id ? await Axios.put(`${serverUrl}/users/${this.$route.params.id}`, this.payload) : await Axios.post(`${serverUrl}/users`, this.payload);
         const { data } = r;
         this.dialog = false;
         if (Object.keys(data).length) {

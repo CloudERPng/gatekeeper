@@ -61,6 +61,7 @@
 
 <script>
 import Axios from 'axios';
+import serverUrl from '../main';
 
 export default {
   name: 'TokenList',
@@ -111,7 +112,7 @@ export default {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         };
         this.loading = true;
-        const response = await Axios.get('https://phrase.website/tokens', { params: { all: 1 } });
+        const response = await Axios.get(`${serverUrl}/tokens`, { params: { all: 1 } });
         const { data } = response;
         this.tokens = data.map((item) => ({
           id: item.id,
@@ -134,7 +135,7 @@ export default {
       };
       this.loading = true;
       try {
-        await Axios.post('https://phrase.website/tokens/invalidate', { id: item.id });
+        await Axios.post(`${serverUrl}/tokens/invalidate`, { id: item.id });
         // if an error is not thrown, we can safely assume that the `is_valid` property
         // is now false. No need for a round trip
         const token = this.tokens.find((_token) => _token.id === item.id);
