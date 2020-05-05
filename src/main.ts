@@ -11,4 +11,4 @@ new Vue({
   render: (h) => h(App),
 }).$mount('#app');
 
-export default 'http://127.0.0.1:3000';
+export default 'http://159.65.36.148';
