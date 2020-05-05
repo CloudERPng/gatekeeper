@@ -266,7 +266,6 @@ export default Vue.extend({
       this.alert.text = `${err.message}. Please reload the page`;
       this.alert.type = 'error';
       this.valid = false;
-      console.log(err);
     }
 
     // load the user data if available
