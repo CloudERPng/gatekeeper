@@ -11,4 +11,4 @@ new Vue({
   render: (h) => h(App),
 }).$mount('#app');
 
-export default 'http://159.65.36.148';
+export default 'https://api.clouderp.one';
